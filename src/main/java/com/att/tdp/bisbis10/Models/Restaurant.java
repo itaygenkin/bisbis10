@@ -3,20 +3,21 @@ package com.att.tdp.bisbis10.Models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name="Restaurants")
 public class Restaurant {
 
     /**************FIELDS*****************/
     @Id
+    @Column(name = "restId",nullable = false,unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+    @Column(nullable = false)
     private String name;
-    @Column
+    @Column(nullable = false)
     private boolean isKosher;
-    @Column
-    private Float rating = 0F;
-
-    private Float numOfRates = 0F;
+    @OneToOne(fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn(name = "restRating", referencedColumnName = "rating")
+    private Rating rating;
 
     /**************Methods*****************/
     public long getId(){ return this.id; }
@@ -25,14 +26,19 @@ public class Restaurant {
     public void setName(String name) { this.name = name; }
     public boolean getIsKosher(){ return this.isKosher; }
     public void setIsKosher(boolean kosher) { this.isKosher = kosher; }
-    public float getRating(){ return this.rating; }
-    public void setRating(float rate) {
-        if (rate < 0 || rate > 5)
-            return;
-        this.rating = (this.rating * this.numOfRates + rate) / (this.numOfRates + 1);
-        this.setNumOfRates(this.numOfRates + 1);
+    public Float getRating(){
+        if (this.rating != null)
+            return this.rating.getRating();
+        else
+            return 0.0F;
     }
-    public float getNumOfRates() { return this.numOfRates; }
-    public void setNumOfRates(Float numOfRates) { this.numOfRates = numOfRates; }
+    public void setRating(Rating rating) { this.rating = rating; }
+    public void addRating(Float rate) {
+        if (ratingIsNull())
+            System.out.println("rating is null");
+        else
+            this.rating.addRating(rate);
+    }
+    public boolean ratingIsNull(){ return this.rating == null; }
 
 }

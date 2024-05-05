@@ -1,5 +1,6 @@
 package com.att.tdp.bisbis10.controller;
 
+import com.att.tdp.bisbis10.Models.Rating;
 import com.att.tdp.bisbis10.Models.Restaurant;
 import com.att.tdp.bisbis10.Reposiroty.RatingRepo;
 import com.att.tdp.bisbis10.Reposiroty.RestaurantRepo;
@@ -62,10 +63,20 @@ public class ApiController {
     }
 
     @PostMapping("/ratings")
-    public void rateRestaurant(@RequestParam long restaurantId, @RequestParam float rating){
-        Restaurant rest = restRepo.getById(restaurantId);
-        rest.setRating(rating);
-        restRepo.save(rest);
+    public List<Rating> rateRestaurant(@RequestParam long restaurantId, @RequestParam float rating){
+        if (restRepo.findById(restaurantId).isEmpty())
+            return null;
+        Restaurant restaurant = restRepo.findById(restaurantId).get();
+        if (restaurant.ratingIsNull()){
+            Rating rate = new Rating(restaurant, rating);
+            ratingRepo.saveAndFlush(rate);
+            restaurant.setRating(rate);
+        }
+        else{
+            restaurant.addRating(rating);
+            restRepo.save(restaurant);
+        }
+        return ratingRepo.findAll();
     }
 
 }
