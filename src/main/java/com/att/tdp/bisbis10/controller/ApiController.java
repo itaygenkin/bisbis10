@@ -1,8 +1,11 @@
 package com.att.tdp.bisbis10.controller;
 
 import com.att.tdp.bisbis10.Models.Restaurant;
+import com.att.tdp.bisbis10.Reposiroty.RatingRepo;
 import com.att.tdp.bisbis10.Reposiroty.RestaurantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,8 @@ public class ApiController {
 
     @Autowired
     RestaurantRepo restRepo;
+    @Autowired
+    RatingRepo ratingRepo;
 
     @GetMapping("/")
     public String Welcome(){
@@ -31,14 +36,36 @@ public class ApiController {
         return null;
     }
 
-    @PostMapping("/restaurants")
-    public String addRestaurant(@RequestBody Restaurant rest){
-        restRepo.save(rest);
-        return "A new restaurant has been added...";
-    }
-
     @GetMapping("/restaurants/{id}")
     public Optional<Restaurant> getById(@PathVariable long id){
         return restRepo.findById(id);
     }
+
+    @PostMapping("/restaurants")
+    public ResponseEntity addRestaurant(@RequestBody Restaurant rest){
+        restRepo.save(rest);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PutMapping("/restaurants/{id}")
+    public String updateRestaurant(@PathVariable long id){
+        // TODO: implement
+        return "";
+    }
+
+    @DeleteMapping("/restaurants/{id}")
+//    @ResponseBody
+    public ResponseEntity deleteRestaurant(@PathVariable long id){
+        Restaurant toDelete = restRepo.getById(id);
+        restRepo.delete(toDelete);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/ratings")
+    public void rateRestaurant(@RequestParam long restaurantId, @RequestParam float rating){
+        Restaurant rest = restRepo.getById(restaurantId);
+        rest.setRating(rating);
+        restRepo.save(rest);
+    }
+
 }
