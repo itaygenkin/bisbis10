@@ -43,7 +43,7 @@ public class Rating {
     public void addRating(Float rating){
         if (rating < 0 || rating > 5) // do nothing
             return;
-        setNumOfRatings((getRating() * getNumOfRatings() + rating) / (getNumOfRatings() + 1));
+        setRating((getRating() * getNumOfRatings() + rating) / (getNumOfRatings() + 1));
         setNumOfRatings(getNumOfRatings() + 1);
     }
     public void setId(Long id) { this.id = id; }

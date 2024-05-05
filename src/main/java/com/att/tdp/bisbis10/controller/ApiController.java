@@ -63,9 +63,9 @@ public class ApiController {
     }
 
     @PostMapping("/ratings")
-    public List<Rating> rateRestaurant(@RequestParam long restaurantId, @RequestParam float rating){
+    public void rateRestaurant(@RequestParam long restaurantId, @RequestParam float rating){
         if (restRepo.findById(restaurantId).isEmpty())
-            return null;
+            return;
         Restaurant restaurant = restRepo.findById(restaurantId).get();
         if (restaurant.ratingIsNull()){
             Rating rate = new Rating(restaurant, rating);
@@ -74,9 +74,8 @@ public class ApiController {
         }
         else{
             restaurant.addRating(rating);
-            restRepo.save(restaurant);
+            restRepo.saveAndFlush(restaurant);
         }
-        return ratingRepo.findAll();
     }
 
 }

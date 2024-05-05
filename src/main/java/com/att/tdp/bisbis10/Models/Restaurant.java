@@ -27,10 +27,10 @@ public class Restaurant {
     public boolean getIsKosher(){ return this.isKosher; }
     public void setIsKosher(boolean kosher) { this.isKosher = kosher; }
     public Float getRating(){
-        if (this.rating != null)
-            return this.rating.getRating();
-        else
+        if (ratingIsNull())
             return 0.0F;
+        else
+            return this.rating.getRating();
     }
     public void setRating(Rating rating) { this.rating = rating; }
     public void addRating(Float rate) {
