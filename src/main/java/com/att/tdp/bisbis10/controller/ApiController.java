@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +60,6 @@ public class ApiController {
     }
 
     @DeleteMapping("/restaurants/{id}")
-//    @ResponseBody
     public ResponseEntity deleteRestaurant(@PathVariable long id){
         Restaurant toDelete = restRepo.getById(id);
         restRepo.delete(toDelete);
@@ -85,10 +85,9 @@ public class ApiController {
     @PostMapping("/restaurants/{id}/dishes")
     public ResponseEntity addDish(@PathVariable long id, @RequestParam String name,
                                   @RequestParam String description, @RequestParam int price){
-        System.out.println(id);
         if (restRepo.findById(id).isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        System.out.println("==========");
+
         Restaurant restaurant = restRepo.findById(id).get();
         Dish dish = new Dish(name, description, price);
         dishRepo.save(dish);
@@ -97,20 +96,35 @@ public class ApiController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PutMapping("/restaurant/{id}/dishes/{dishId}")
-    public void updateDish(@PathVariable long id, @PathVariable long dishId, @RequestParam String name,
+    @PutMapping("/restaurants/{id}/dishes/{dishId}")
+    public void updateDish(@PathVariable long id, @PathVariable long dishId,
                       @RequestParam String description, @RequestParam int price){
-        // TODO: implement
+        if (restRepo.findById(id).isEmpty() || dishRepo.findById(dishId).isEmpty())
+            return; // do nothing
+        Dish updatedDish = dishRepo.findById(dishId).get();
+        updatedDish.setDescription(description);
+        updatedDish.setPrice(price);
+        dishRepo.save(updatedDish);
     }
 
-    @DeleteMapping("/restaurant/{id}/dishes/{dishId}")
-    public void deleteDish(@PathVariable long id, @PathVariable long dishId){
-        // TODO: implement
+    @DeleteMapping("/restaurants/{id}/dishes/{dishId}")
+    public ResponseEntity deleteDish(@PathVariable long id, @PathVariable long dishId){
+        if (restRepo.findById(id).isPresent() &&
+                dishRepo.findById(dishId).isPresent()){
+            Restaurant restaurant = restRepo.findById(id).get();
+            Dish dish = dishRepo.findById(dishId).get();
+            restaurant.removeDish(dish);
+            dishRepo.delete(dish);
+            restRepo.save(restaurant);
+        }
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/restaurants/{id}/dishes")
     public List<Dish> getDishes(@PathVariable long id){
-        // TODO: implement
-        return null;
+        if (restRepo.findById(id).isEmpty())
+            return new ArrayList<>();
+        return restRepo.findById(id).get().getDishList();
     }
+
 }

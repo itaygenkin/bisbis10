@@ -2,8 +2,8 @@ package com.att.tdp.bisbis10.Models;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="Restaurants")
@@ -23,7 +23,7 @@ public class Restaurant {
     private Rating rating;
     @OneToMany
     @JoinColumn(name = "dishes")
-    private Set<Dish> dishList = new HashSet<>();
+    private List<Dish> dishList = new ArrayList<>();
 
     /**************Methods*****************/
     public long getId(){ return this.id; }
@@ -39,8 +39,8 @@ public class Restaurant {
             return this.rating.getRating();
     }
     public void setRating(Rating rating) { this.rating = rating; }
-    public Set<Dish> getDishList() { return this.dishList; }
-    public void setDishList(Set<Dish> dishes) {this.dishList = dishes; }
+    public List<Dish> getDishList() { return this.dishList; }
+    public void setDishList(List<Dish> dishes) {this.dishList = dishes; }
     public void addRating(Float rate) {
         if (ratingIsNull())
             System.out.println("rating is null");
@@ -50,6 +50,9 @@ public class Restaurant {
     public boolean ratingIsNull(){ return this.rating == null; }
     public void addDish(Dish dish){
         this.dishList.add(dish);
+    }
+    public void removeDish(Dish dish){
+        this.dishList.remove(dish);
     }
 
 }
