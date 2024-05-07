@@ -62,7 +62,7 @@ public class Restaurant {
 
         return this.cuisines.stream().map(Cuisine::getName).collect(Collectors.toSet());
     }
-    public Set<Cuisine> findCuisineList() {
+    public Set<Cuisine> GetCuisineList() {
         if (this.cuisines == null)
             return new HashSet<>();
 
@@ -87,8 +87,12 @@ public class Restaurant {
         this.cuisines.addAll(cuisines);
     }
 
-//    public boolean containsCuisine(Cuisine cuisine){
-//        return this.cuisines.contains(cuisine);
-//    }
+    public boolean containsCuisine(Cuisine cuisine){
+        for (Cuisine c : this.cuisines){
+            if (c.getName().equals(cuisine.getName()))
+                return true;
+        }
+        return false;
+    }
 
 }

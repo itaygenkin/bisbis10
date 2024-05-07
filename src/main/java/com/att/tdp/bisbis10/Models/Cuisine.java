@@ -2,6 +2,9 @@ package com.att.tdp.bisbis10.Models;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "Cuisines")
 public class Cuisine {
@@ -12,9 +15,9 @@ public class Cuisine {
     private Long id;
     @Column
     private String name;
-//    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    @JoinColumn(referencedColumnName = "restId", unique = false)
-//    private Restaurant restaurant;
+    private Set<Restaurant> restaurants = new HashSet<>();
 
     /****************Constructors*****************/
     public Cuisine() {}
@@ -23,12 +26,24 @@ public class Cuisine {
         this.name = name;
     }
 
-//    public Cuisine(String name, Restaurant restaurant){
-//        this.name = name;
-//        this.restaurant = restaurant;
-//    }
+    public Cuisine(String name, Restaurant restaurant){
+        this.name = name;
+        this.restaurants.add(restaurant);
+    }
 
     /*****************Methods*******************/
     public void setName(String name) { this.name = name; }
     public String getName() { return this.name; }
+
+    public Set<Restaurant> GetRestaurants(){
+        return this.restaurants;
+    }
+
+    public void addRestaurant(Restaurant restaurant){
+        this.restaurants.add(restaurant);
+    }
+
+    public void removeRestaurant(Restaurant restaurant){
+        this.restaurants.remove(restaurant);
+    }
 }

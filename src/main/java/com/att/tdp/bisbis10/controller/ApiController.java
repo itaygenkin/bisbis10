@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @RestController
@@ -23,8 +24,6 @@ public class ApiController {
 
     @Autowired
     RestaurantRepo restRepo;
-//    @Autowired
-//    RatingRepo ratingRepo;
     @Autowired
     DishRepo dishRepo;
     @Autowired
@@ -37,15 +36,36 @@ public class ApiController {
 
     @GetMapping("/restaurants")
     public List<Restaurant> getRestaurants(){
+        System.out.println("----------");
         return restRepo.findAll();
     }
 
-    @GetMapping("/restaurants?cuisine={cuisine}")
-    public List<Restaurant> getRestaurantsByCuisine(@PathVariable String cuisine){
-        // TODO: implement
-        List<Restaurant> list = restRepo.findAll();
-        return null;
-    }
+//    @GetMapping("/restaurants")
+//    public List<Restaurant> getRestaurantsByCuisine(@BindParam String cuisine){
+//        System.out.println("Got: " + cuisine);
+//        Cuisine exampleCuisine = new Cuisine(cuisine);
+//        ExampleMatcher matcher = ExampleMatcher.matching()
+////                .withMatcher(ExampleMatcher.StringMatcher.DEFAULT);
+////                .withIgnorePaths("id", "restaurants")
+//                .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
+//
+//        Example<Cuisine> example = Example.of(exampleCuisine, matcher);
+//        List<Cuisine> optionalCuisine = cuisineRepo.findAll(example);
+//        if (optionalCuisine.isEmpty())
+//            return null;
+////        Cuisine cuisineEntity = optionalCuisine;
+//
+////        System.out.println(cuisineEntity.getName());
+////        Set<Restaurant> rests = cuisineEntity.GetRestaurants();
+////        System.out.println(rests.size());
+//        for (Cuisine c : optionalCuisine) {
+//            System.out.println("-> " + c.getName());
+//            for (Restaurant rest : c.GetRestaurants())
+//                System.out.println("--> " + rest.getName());
+//        }
+//        return null;
+////        return new ArrayList<>(cuisineEntity.GetRestaurants());
+//    }
 
     @GetMapping("/restaurants/{id}")
     public Optional<Restaurant> getById(@PathVariable long id){
@@ -54,7 +74,10 @@ public class ApiController {
 
     @PostMapping("/restaurants")
     public ResponseEntity addRestaurant(@RequestBody Restaurant rest){
-        cuisineRepo.saveAll(rest.findCuisineList());
+        Set<Cuisine> cuisines = rest.GetCuisineList();
+        for (Cuisine c : cuisines)
+            c.addRestaurant(rest);
+        cuisineRepo.saveAll(cuisines);
         restRepo.save(rest);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -78,13 +101,28 @@ public class ApiController {
 
     @DeleteMapping("/restaurants/{id}")
     public ResponseEntity deleteRestaurant(@PathVariable long id){
-        Restaurant toDelete = restRepo.getById(id);
+        Optional<Restaurant> toDelete = restRepo.findById(id);
+        if (toDelete.isEmpty())
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
 
-        dishRepo.deleteAll(toDelete.getDishes());
-        cuisineRepo.deleteAll(toDelete.findCuisineList());
-        restRepo.delete(toDelete);
+        dishRepo.deleteAll(toDelete.get().getDishes());
+        unlinkRestaurantFromCuisineAndDelete(toDelete.get());
+        restRepo.delete(toDelete.get());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * remove the restaurant from its cuisines and delete the cuisine entity
+     * if it has no restaurants linked to it
+     * @param restaurant: the restaurant to unlink from its cuisines
+     */
+    private void unlinkRestaurantFromCuisineAndDelete(Restaurant restaurant){
+        for (Cuisine cuisine : restaurant.GetCuisineList()){
+            cuisine.removeRestaurant(restaurant);
+            if (cuisine.GetRestaurants().isEmpty())
+                cuisineRepo.delete(cuisine);
+        }
     }
 
     @PostMapping("/ratings")
