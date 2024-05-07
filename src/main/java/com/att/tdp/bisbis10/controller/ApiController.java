@@ -9,6 +9,8 @@ import com.att.tdp.bisbis10.Reposiroty.CuisineRepo;
 import com.att.tdp.bisbis10.Reposiroty.DishRepo;
 import com.att.tdp.bisbis10.Reposiroty.RestaurantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,32 +42,21 @@ public class ApiController {
         return restRepo.findAll();
     }
 
-//    @GetMapping("/restaurants")
-//    public List<Restaurant> getRestaurantsByCuisine(@BindParam String cuisine){
-//        System.out.println("Got: " + cuisine);
-//        Cuisine exampleCuisine = new Cuisine(cuisine);
-//        ExampleMatcher matcher = ExampleMatcher.matching()
-////                .withMatcher(ExampleMatcher.StringMatcher.DEFAULT);
-////                .withIgnorePaths("id", "restaurants")
-//                .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
-//
-//        Example<Cuisine> example = Example.of(exampleCuisine, matcher);
-//        List<Cuisine> optionalCuisine = cuisineRepo.findAll(example);
-//        if (optionalCuisine.isEmpty())
-//            return null;
-////        Cuisine cuisineEntity = optionalCuisine;
-//
-////        System.out.println(cuisineEntity.getName());
-////        Set<Restaurant> rests = cuisineEntity.GetRestaurants();
-////        System.out.println(rests.size());
-//        for (Cuisine c : optionalCuisine) {
-//            System.out.println("-> " + c.getName());
-//            for (Restaurant rest : c.GetRestaurants())
-//                System.out.println("--> " + rest.getName());
-//        }
-//        return null;
-////        return new ArrayList<>(cuisineEntity.GetRestaurants());
-//    }
+    @GetMapping("/restaurants/")  // TODO: fix endpoint url notation
+    public List<Restaurant> getRestaurantsByCuisine(@RequestParam String cuisine){
+        Cuisine exampleCuisine = new Cuisine(cuisine);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
+
+        Example<Cuisine> example = Example.of(exampleCuisine, matcher);
+        List<Cuisine> cuisines = cuisineRepo.findAll(example);
+
+        List<Restaurant> restaurants = new ArrayList<>();
+        for (Cuisine c : cuisines)
+            restaurants.addAll(c.GetRestaurants());
+
+        return restaurants;
+    }
 
     @GetMapping("/restaurants/{id}")
     public Optional<Restaurant> getById(@PathVariable long id){
