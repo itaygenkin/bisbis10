@@ -1,10 +1,12 @@
 package com.att.tdp.bisbis10.controller;
 
+import com.att.tdp.bisbis10.Models.Cuisine;
 import com.att.tdp.bisbis10.Models.Dish;
-import com.att.tdp.bisbis10.Models.Rating;
 import com.att.tdp.bisbis10.Models.Restaurant;
+import com.att.tdp.bisbis10.Order;
+import com.att.tdp.bisbis10.Pair;
+import com.att.tdp.bisbis10.Reposiroty.CuisineRepo;
 import com.att.tdp.bisbis10.Reposiroty.DishRepo;
-import com.att.tdp.bisbis10.Reposiroty.RatingRepo;
 import com.att.tdp.bisbis10.Reposiroty.RestaurantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,10 +23,12 @@ public class ApiController {
 
     @Autowired
     RestaurantRepo restRepo;
-    @Autowired
-    RatingRepo ratingRepo;
+//    @Autowired
+//    RatingRepo ratingRepo;
     @Autowired
     DishRepo dishRepo;
+    @Autowired
+    CuisineRepo cuisineRepo;
 
     @GetMapping("/")
     public String Welcome(){
@@ -37,8 +41,9 @@ public class ApiController {
     }
 
     @GetMapping("/restaurants?cuisine={cuisine}")
-    public List<Restaurant> getByCuisine(@PathVariable String cuisine){
+    public List<Restaurant> getRestaurantsByCuisine(@PathVariable String cuisine){
         // TODO: implement
+        List<Restaurant> list = restRepo.findAll();
         return null;
     }
 
@@ -49,20 +54,36 @@ public class ApiController {
 
     @PostMapping("/restaurants")
     public ResponseEntity addRestaurant(@RequestBody Restaurant rest){
+        cuisineRepo.saveAll(rest.findCuisineList());
         restRepo.save(rest);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @PutMapping("/restaurants/{id}")
-    public String updateRestaurant(@PathVariable long id){
-        // TODO: implement
-        return "";
+    public void updateRestaurant(@PathVariable long id,
+                                 @RequestParam(value="cuisines") String[] cuisines
+    ){
+        if (restRepo.findById(id).isEmpty() || cuisines.length == 0)
+            return;
+
+        Restaurant restaurant = restRepo.findById(id).get();
+        List<Cuisine> cuisineList = new ArrayList<>();
+        for (String c : cuisines)
+            cuisineList.add(new Cuisine(c));
+
+        cuisineRepo.saveAll(cuisineList);
+        restaurant.addCuisines(cuisineList);
+        restRepo.save(restaurant);
     }
 
     @DeleteMapping("/restaurants/{id}")
     public ResponseEntity deleteRestaurant(@PathVariable long id){
         Restaurant toDelete = restRepo.getById(id);
+
+        dishRepo.deleteAll(toDelete.getDishes());
+        cuisineRepo.deleteAll(toDelete.findCuisineList());
         restRepo.delete(toDelete);
+
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -71,15 +92,25 @@ public class ApiController {
         if (restRepo.findById(restaurantId).isEmpty())
             return;
         Restaurant restaurant = restRepo.findById(restaurantId).get();
-        if (restaurant.ratingIsNull()){
-            Rating rate = new Rating(restaurant, rating);
-            ratingRepo.saveAndFlush(rate);
-            restaurant.setRating(rate);
-        }
-        else{
-            restaurant.addRating(rating);
-            restRepo.saveAndFlush(restaurant);
-        }
+        restaurant.addRating(rating);
+        restRepo.save(restaurant);
+    }
+
+    @GetMapping("/cuisines")
+    public List<Cuisine> getAllCuisines(){
+        return cuisineRepo.findAll();
+    }
+
+    @DeleteMapping("/cuisines")
+    public void deleteALlCuisines(){
+        cuisineRepo.deleteAll();
+    }
+
+    @PostMapping("/order")
+    public void order(@RequestBody Order order){
+        long restId = order.getRestaurantId();
+        List<Pair<Long, Integer>> orderItems = order.getOrderItems();
+        // TODO:(TO FIGURE OUT) what it might do
     }
 
     @PostMapping("/restaurants/{id}/dishes")
@@ -124,7 +155,7 @@ public class ApiController {
     public List<Dish> getDishes(@PathVariable long id){
         if (restRepo.findById(id).isEmpty())
             return new ArrayList<>();
-        return restRepo.findById(id).get().getDishList();
+        return restRepo.findById(id).get().getDishes();
     }
 
 }
