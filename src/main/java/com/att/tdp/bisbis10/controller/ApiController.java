@@ -33,18 +33,15 @@ public class ApiController {
 
     @GetMapping("/")
     public String Welcome(){
-        return "Welcome";
+        return "Welcome to bisbis10";
     }
 
     @GetMapping("/restaurants")
-    public List<Restaurant> getRestaurants(){
-        System.out.println("----------");
-        return restRepo.findAll();
-    }
+    public List<Restaurant> getRestaurants(@RequestParam Optional<String> cuisine){
+        if (cuisine.isEmpty())
+            return restRepo.findAll();
 
-    @GetMapping("/restaurants/")  // TODO: fix endpoint url notation
-    public List<Restaurant> getRestaurantsByCuisine(@RequestParam String cuisine){
-        Cuisine exampleCuisine = new Cuisine(cuisine);
+        Cuisine exampleCuisine = new Cuisine(cuisine.get());
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
 
@@ -125,15 +122,15 @@ public class ApiController {
         restRepo.save(restaurant);
     }
 
-    @GetMapping("/cuisines")
-    public List<Cuisine> getAllCuisines(){
-        return cuisineRepo.findAll();
-    }
-
-    @DeleteMapping("/cuisines")
-    public void deleteALlCuisines(){
-        cuisineRepo.deleteAll();
-    }
+//    @GetMapping("/cuisines")
+//    public List<Cuisine> getAllCuisines(){
+//        return cuisineRepo.findAll();
+//    }
+//
+//    @DeleteMapping("/cuisines")
+//    public void deleteALlCuisines(){
+//        cuisineRepo.deleteAll();
+//    }
 
     @PostMapping("/order")
     public void order(@RequestBody Order order){
