@@ -2,10 +2,7 @@ package com.att.tdp.bisbis10.Models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -14,20 +11,24 @@ public class Restaurant {
 
     /**************FIELDS*****************/
     @Id
-    @Column(name = "restId",nullable = false,unique = true)
+    @Column(name = "restId",nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false)
+    @Column(name = "name",nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(name = "isKosher",nullable = false)
     private boolean isKosher;
-    @Column
+    @Column(name = "averageRating")
     private Float averageRating = 0.0F;
     @OneToMany
     @JoinColumn(name = "dishes")
     private List<Dish> dishes = new ArrayList<>();
-    @OneToMany
-    @JoinColumn(name = "cuisines", referencedColumnName = "name")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "Cuisines_Restaurants",
+//            joinColumns = @JoinColumn(name = "restaurant_name"),
+//            inverseJoinColumns = @JoinColumn(name = "cuisine_name")
+//    )
     private Set<Cuisine> cuisines = new HashSet<>();
 
     private float numOfRating = 0.0F;
@@ -83,7 +84,7 @@ public class Restaurant {
         this.numOfRating++;
     }
 
-    public void addCuisines(List<Cuisine> cuisines){
+    public void addCuisines(Collection<Cuisine> cuisines){
         this.cuisines.addAll(cuisines);
     }
 

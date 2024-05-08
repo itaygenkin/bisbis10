@@ -13,11 +13,15 @@ public class Cuisine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "name")
     private String name;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(referencedColumnName = "restId", unique = false)
-    private Set<Restaurant> restaurants = new HashSet<>();
+    @ManyToMany
+//    @JoinTable(
+//            name = "Cuisines_Restaurants",
+//            joinColumns = @JoinColumn(name = "cuisine_name"),
+//            inverseJoinColumns = @JoinColumn(name = "restaurant_name")
+//    )
+    private final Set<Restaurant> restaurants = new HashSet<>();
 
     /****************Constructors*****************/
     public Cuisine() {}
@@ -32,6 +36,9 @@ public class Cuisine {
     }
 
     /*****************Methods*******************/
+    public Long getId() { return this.id; }
+    public void setId(Long id) { this.id = id; }
+
     public void setName(String name) { this.name = name; }
     public String getName() { return this.name; }
 
