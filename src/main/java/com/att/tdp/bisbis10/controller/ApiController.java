@@ -2,12 +2,9 @@ package com.att.tdp.bisbis10.controller;
 
 import com.att.tdp.bisbis10.Models.Cuisine;
 import com.att.tdp.bisbis10.Models.Dish;
+import com.att.tdp.bisbis10.Models.Order;
 import com.att.tdp.bisbis10.Models.Restaurant;
-import com.att.tdp.bisbis10.Order;
-import com.att.tdp.bisbis10.Pair;
-import com.att.tdp.bisbis10.Reposiroty.CuisineRepo;
-import com.att.tdp.bisbis10.Reposiroty.DishRepo;
-import com.att.tdp.bisbis10.Reposiroty.RestaurantRepo;
+import com.att.tdp.bisbis10.Reposiroty.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -27,6 +24,10 @@ public class ApiController {
     DishRepo dishRepo;
     @Autowired
     CuisineRepo cuisineRepo;
+    @Autowired
+    OrderRepo orderRepo;
+    @Autowired
+    PairRepo pairRepo;
 
     @GetMapping("/")
     public String Welcome(){
@@ -180,20 +181,17 @@ public class ApiController {
         return cuisineRepo.findAll();
     }
 
-    @DeleteMapping("/cuisines")
-    public void deleteALlCuisines(){
-        cuisineRepo.deleteAll();
-    }
-
     @PostMapping("/order")
-    public void order(@RequestBody Order order){
-        long restId = order.getRestaurantId();
-        List<Pair<Long, Integer>> orderItems = order.getOrderItems();
-        // TODO:(TO FIGURE OUT) what it might do
+    public ResponseEntity<Order> order(@RequestBody Order order){
+        pairRepo.saveAll(order.GetOrderItems());
+        orderRepo.save(order);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(order);
     }
 
     @PostMapping("/restaurants/{id}/dishes")
-    public ResponseEntity addDish(@PathVariable long id, @RequestParam String name,
+    public ResponseEntity<Void> addDish(@PathVariable long id, @RequestParam String name,
                                   @RequestParam String description, @RequestParam int price){
         if (restRepo.findById(id).isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -203,7 +201,7 @@ public class ApiController {
         dishRepo.save(dish);
         restaurant.addDish(dish);
         restRepo.save(restaurant);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/restaurants/{id}/dishes/{dishId}")
@@ -218,7 +216,7 @@ public class ApiController {
     }
 
     @DeleteMapping("/restaurants/{id}/dishes/{dishId}")
-    public ResponseEntity deleteDish(@PathVariable long id, @PathVariable long dishId){
+    public ResponseEntity<Void> deleteDish(@PathVariable long id, @PathVariable long dishId){
         if (restRepo.findById(id).isPresent() &&
                 dishRepo.findById(dishId).isPresent()){
             Restaurant restaurant = restRepo.findById(id).get();
@@ -227,7 +225,7 @@ public class ApiController {
             dishRepo.delete(dish);
             restRepo.save(restaurant);
         }
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/restaurants/{id}/dishes")
