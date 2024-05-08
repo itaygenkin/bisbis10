@@ -59,35 +59,17 @@ public class ApiController {
 
     @PostMapping("/restaurants")
     public ResponseEntity<Void> addRestaurant(@RequestBody Restaurant restaurant){
-//        restRepo.save(restaurant);
         Set<Cuisine> cuisineSet = restaurant.GetCuisineList();
         Set<Cuisine> updatedCuisineSet = new HashSet<>();
 
         for (Cuisine c : cuisineSet) {
-            Optional<Cuisine> optionalCuisine = findMatchCuisine(c.getName());
-            // cuisine has already instantiated case
-            if (optionalCuisine.isPresent()){
-//                optionalCuisine.get().addRestaurant(restaurant);
-//                cuisineRepo.saveAndFlush(optionalCuisine.get());
-                updatedCuisineSet.add(optionalCuisine.get());
-            }
-            // instantiating cuisine case
-            else{
-//                c.addRestaurant(restaurant);
-//                cuisineRepo.saveAndFlush(c);
-                updatedCuisineSet.add(c);
-            }
+            findMatchCuisine(c.getName()).ifPresentOrElse(updatedCuisineSet::add,
+                    () -> updatedCuisineSet.add(c));
         }
+
         cuisineRepo.saveAll(updatedCuisineSet);
         restaurant.setCuisines(updatedCuisineSet);
         addRestaurantToCuisines(updatedCuisineSet, restaurant);
-//        cuisineRepo.saveAll(updatedCuisineSet);
-//        Set<Cuisine> cuisines = restaurant.GetCuisineList();
-//        for (Cuisine c : cuisines) {
-//            System.out.println(c.getId());
-//            c.addRestaurant(restaurant);
-//        }
-//        cuisineRepo.saveAllAndFlush(cuisines);
         restRepo.save(restaurant);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -171,16 +153,17 @@ public class ApiController {
     }
 
     @DeleteMapping("/restaurants/{id}")
-    public ResponseEntity deleteRestaurant(@PathVariable long id){
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable long id){
         Optional<Restaurant> toDelete = restRepo.findById(id);
         if (toDelete.isEmpty())
-            return new ResponseEntity(HttpStatus.GONE);
+            return new ResponseEntity<>(HttpStatus.GONE);
 
         dishRepo.deleteAll(toDelete.get().getDishes());
         unlinkRestaurantFromCuisineAndDelete(toDelete.get());
+        toDelete.get().setCuisines(null);
         restRepo.delete(toDelete.get());
 
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/ratings")

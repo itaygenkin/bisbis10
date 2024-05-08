@@ -16,11 +16,6 @@ public class Cuisine {
     @Column(name = "name")
     private String name;
     @ManyToMany
-//    @JoinTable(
-//            name = "Cuisines_Restaurants",
-//            joinColumns = @JoinColumn(name = "cuisine_name"),
-//            inverseJoinColumns = @JoinColumn(name = "restaurant_name")
-//    )
     private final Set<Restaurant> restaurants = new HashSet<>();
 
     /****************Constructors*****************/

@@ -24,11 +24,6 @@ public class Restaurant {
     @JoinColumn(name = "dishes")
     private List<Dish> dishes = new ArrayList<>();
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "Cuisines_Restaurants",
-//            joinColumns = @JoinColumn(name = "restaurant_name"),
-//            inverseJoinColumns = @JoinColumn(name = "cuisine_name")
-//    )
     private Set<Cuisine> cuisines = new HashSet<>();
 
     private float numOfRating = 0.0F;
