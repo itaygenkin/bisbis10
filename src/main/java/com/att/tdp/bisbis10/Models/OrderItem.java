@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Pair {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,9 +14,9 @@ public class Pair {
     public Long dishId;
     public Integer amount;
 
-    public Pair(){}
+    public OrderItem(){}
 
-    public Pair(Long dishId, Integer amount){
+    public OrderItem(Long dishId, Integer amount){
         this.dishId = dishId;
         this.amount = amount;
     }

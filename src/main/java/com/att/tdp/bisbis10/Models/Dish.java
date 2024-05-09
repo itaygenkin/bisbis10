@@ -10,9 +10,6 @@ public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @ManyToOne
-//    @JoinColumn(referencedColumnName = "restId")
-//    private Restaurant restaurant;
     @Column
     private String name;
     @Column

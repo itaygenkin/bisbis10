@@ -5,7 +5,6 @@ import com.att.tdp.bisbis10.Models.Dish;
 import com.att.tdp.bisbis10.Models.Order;
 import com.att.tdp.bisbis10.Models.Restaurant;
 import com.att.tdp.bisbis10.Reposiroty.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
@@ -18,16 +17,19 @@ import java.util.*;
 @RestController
 public class ApiController {
 
-    @Autowired
-    RestaurantRepo restRepo;
-    @Autowired
-    DishRepo dishRepo;
-    @Autowired
-    CuisineRepo cuisineRepo;
-    @Autowired
-    OrderRepo orderRepo;
-    @Autowired
-    PairRepo pairRepo;
+    final RestaurantRepo restRepo;
+    final DishRepo dishRepo;
+    final CuisineRepo cuisineRepo;
+    final OrderRepo orderRepo;
+    final PairRepo pairRepo;
+
+    public ApiController(RestaurantRepo restRepo, DishRepo dishRepo, CuisineRepo cuisineRepo, OrderRepo orderRepo, PairRepo pairRepo) {
+        this.restRepo = restRepo;
+        this.dishRepo = dishRepo;
+        this.cuisineRepo = cuisineRepo;
+        this.orderRepo = orderRepo;
+        this.pairRepo = pairRepo;
+    }
 
     @GetMapping("/")
     public String Welcome(){
