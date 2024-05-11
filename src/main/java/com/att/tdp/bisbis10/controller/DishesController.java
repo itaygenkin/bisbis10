@@ -45,7 +45,8 @@ public class DishesController {
     }
 
     @DeleteMapping("/{dishId}")
-    public ResponseEntity<Void> deleteDish(@PathVariable long id, @PathVariable long dishId){
+    public ResponseEntity<Void> deleteDish(@PathVariable long id,
+                                           @PathVariable long dishId){
         if (dishService.deleteDish(id, dishId))
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
