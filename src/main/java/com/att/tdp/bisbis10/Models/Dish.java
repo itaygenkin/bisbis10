@@ -3,7 +3,6 @@ package com.att.tdp.bisbis10.Models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Dishes")
 public class Dish {
 
     /**************FIELDS*****************/

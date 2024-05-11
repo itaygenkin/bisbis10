@@ -1,16 +1,10 @@
 package com.att.tdp.bisbis10.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity
+@Embeddable
 public class OrderItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     public Long dishId;
     public Integer amount;
 
@@ -21,11 +15,8 @@ public class OrderItem {
         this.amount = amount;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    public long getDishId() { return this.dishId; }
+    public void setDishId(Long id) { this.dishId = id; }
+    public int getAmount() { return this.amount; }
+    public void setAmount(int amount) { this.amount = amount; }
 }

@@ -1,4 +1,4 @@
-package com.att.tdp.bisbis10.Reposiroty;
+package com.att.tdp.bisbis10.Repository;
 
 import com.att.tdp.bisbis10.Models.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
