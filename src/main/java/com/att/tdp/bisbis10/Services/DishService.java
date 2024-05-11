@@ -29,10 +29,15 @@ public class DishService {
         Restaurant restaurant = restaurantRepo.findById(restaurantId).get();
 
         Dish dish = new Dish(name, description, price);
-        this.dishRepo.save(dish);
-        restaurant.addDish(dish);
-        this.restaurantRepo.save(restaurant);
-
+        try  {
+            this.dishRepo.save(dish);
+            restaurant.addDish(dish);
+            this.restaurantRepo.save(restaurant);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -40,13 +45,13 @@ public class DishService {
         this.dishRepo.save(dish);
     }
 
-    public Optional<Dish> getDishById(long id){
-        return this.dishRepo.findById(id);
-    }
+//    public Optional<Dish> getDishById(long id){
+//        return this.dishRepo.findById(id);
+//    }
 
-    public Optional<Restaurant> getResataurantById(long id){
-        return this.restaurantRepo.findById(id);
-    }
+//    public Optional<Restaurant> getResataurantById(long id){
+//        return this.restaurantRepo.findById(id);
+//    }
 
     public boolean deleteDish(long restaurantId, long dishId){
         if (this.restaurantRepo.findById(restaurantId).isEmpty() ||

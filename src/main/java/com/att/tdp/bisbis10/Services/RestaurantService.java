@@ -38,12 +38,11 @@ public class RestaurantService {
         this.restaurantRepo.save(restaurant);
     }
 
-    public void updateRestaurant(Restaurant restaurant,
+    private void updateRestaurant(Restaurant restaurant,
                                  Optional<String> updatedName,
                                  Optional<Boolean> updatedIsKosher,
                                  Optional<Set<String>> updatedCuisineList){
         // updating fields if they present
-        updatedIsKosher.ifPresent(System.out::println);
         updatedName.ifPresent(restaurant::setName);
         updatedIsKosher.ifPresent(restaurant::setIsKosher);
         updatedCuisineList.ifPresent(restaurant::setCuisines);
@@ -71,7 +70,7 @@ public class RestaurantService {
         restaurantRepo.save(restaurant);
     }
 
-    public List<Restaurant> getRestaurantByCuisine(String cuisine){
+    public List<Restaurant> getRestaurantsByCuisine(String cuisine){
         List<Restaurant> res = new ArrayList<>();
         for (Restaurant r : restaurantRepo.findAll()){
             if (r.containsCuisine(cuisine))

@@ -45,6 +45,13 @@ public class Restaurant {
         this.cuisines.addAll(cuisines);
     }
 
+    public Restaurant(long id, String name, boolean kosher, Collection<String> cuisines){
+        this.id = id;
+        this.name = name;
+        this.isKosher = kosher;
+        this.cuisines.addAll(cuisines);
+    }
+
     public Restaurant(RestaurantRecord restaurantRecord){
         this.name = restaurantRecord.name();
         this.isKosher = restaurantRecord.isKosher();

@@ -31,7 +31,7 @@ public class RestaurantsController {
     @GetMapping(params = "cuisine")
     public ResponseEntity<List<Restaurant>> getRestaurantsByCuisine(@RequestParam(name = "cuisine") String cuisine){
         return new ResponseEntity<>(
-                restaurantService.getRestaurantByCuisine(cuisine),
+                restaurantService.getRestaurantsByCuisine(cuisine),
                 HttpStatus.OK);
     }
 
