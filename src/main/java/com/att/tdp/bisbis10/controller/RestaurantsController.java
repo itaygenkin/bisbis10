@@ -22,10 +22,6 @@ public class RestaurantsController {
         this.restaurantService = restService;
     }
 
-    @GetMapping("/")  // TODO: remove
-    public String Welcome(){
-        return "Welcome to bisbis10";
-    }
 
     @GetMapping
     public ResponseEntity<List<Restaurant>> getRestaurants(){

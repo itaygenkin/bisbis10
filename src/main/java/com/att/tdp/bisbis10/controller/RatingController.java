@@ -23,13 +23,13 @@ public class RatingController {
 
     @PostMapping
     public ResponseEntity<Void> rateRestaurant(
-            @RequestParam long restaurantId,
-            @RequestParam float rating){
+            @RequestParam(name = "restaurantId") long id,
+            @RequestParam(name = "rating") float rating){
 
         if (rating < 0 || rating > 5)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        Optional<Restaurant> optionalRestaurant = restaurantService.getRestaurantById(restaurantId);
+        Optional<Restaurant> optionalRestaurant = restaurantService.getRestaurantById(id);
         if (optionalRestaurant.isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 

@@ -61,7 +61,8 @@ public class Restaurant {
     public Float getAverageRating(){
         if (this.numOfRatings == 0)
             return 0.0F;
-        return this.averageRating;
+        float res = this.averageRating;
+        return (float) (Math.round(res * 100) / 100.0);
     }
     public void rateRestaurant(float val){
         synchronized (ratingLocker){
