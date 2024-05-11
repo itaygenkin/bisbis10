@@ -28,7 +28,7 @@ public class Restaurant {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "dishes")
-    private List<Dish> dishes = new ArrayList<>();
+    private Set<Dish> dishes = new HashSet<>();
     @ElementCollection
     private Collection<String> cuisines = new HashSet<>();
 
@@ -39,10 +39,10 @@ public class Restaurant {
         this.name = name;
         this.isKosher = kosher;
     }
-    public Restaurant(String name, boolean kosher, Set<String> cuisines){
+    public Restaurant(String name, boolean kosher, Collection<String> cuisines){
         this.name = name;
         this.isKosher = kosher;
-        this.cuisines = cuisines;
+        this.cuisines.addAll(cuisines);
     }
 
     public Restaurant(RestaurantRecord restaurantRecord){
@@ -71,8 +71,8 @@ public class Restaurant {
         }
     }
 
-    public List<Dish> getDishes() { return this.dishes; }
-    public void setDishes(List<Dish> dishes) { this.dishes = dishes; }
+    public Set<Dish> getDishes() { return this.dishes; }
+    public void setDishes(Set<Dish> dishes) { this.dishes = dishes; }
     public void addDish(Dish dish){
         this.dishes.add(dish);
     }
@@ -89,4 +89,12 @@ public class Restaurant {
         return this.cuisines.contains(cuisine);
     }
 
+    public boolean containsDish(long dishId) {
+        Set<Dish> dishList = this.dishes; // preventing concurrent read-write issues
+        for (Dish d : dishList){
+            if (d.getId() == dishId)
+                return true;
+        }
+        return false;
+    }
 }

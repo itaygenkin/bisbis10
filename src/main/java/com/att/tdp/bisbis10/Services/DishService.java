@@ -7,8 +7,8 @@ import com.att.tdp.bisbis10.Repository.RestaurantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class DishService {
@@ -80,7 +80,7 @@ public class DishService {
         return true;
     }
 
-    public List<Dish> getDishes(long restaurantId){
+    public Set<Dish> getDishes(long restaurantId){
         Optional<Restaurant> restaurant = this.restaurantRepo.findById(restaurantId);
         return restaurant.map(Restaurant::getDishes).orElse(null);
     }

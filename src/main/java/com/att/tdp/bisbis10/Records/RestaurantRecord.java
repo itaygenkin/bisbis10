@@ -1,9 +1,9 @@
 package com.att.tdp.bisbis10.Records;
 
-import java.util.List;
+import java.util.Collection;
 
 public record RestaurantRecord(
         String name,
         boolean isKosher,
-        List<String> cuisines) {
+        Collection<String> cuisines) {
 }

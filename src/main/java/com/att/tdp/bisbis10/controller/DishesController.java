@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/restaurants/{id}/dishes")
@@ -54,8 +54,8 @@ public class DishesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Dish>> getDishes(@PathVariable long id){
-        List<Dish> dishes = dishService.getDishes(id);
+    public ResponseEntity<Set<Dish>> getDishes(@PathVariable long id){
+        Set<Dish> dishes = dishService.getDishes(id);
         if (dishes == null)
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(dishes, HttpStatus.OK);
